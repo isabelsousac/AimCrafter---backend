@@ -11,9 +11,9 @@ import kotlin.time.toDuration
 class CraftController(
     // need to call Dao
 ) {
-    @PostMapping("/craft")
+    @PostMapping("/craft/{userId}")
     @ResponseStatus(HttpStatus.CREATED)
-    fun newCraft(@RequestBody craft: NewCraft): CraftResponse {
+    fun newCraft(@RequestBody craft: NewCraft, @PathVariable userId: Long): CraftResponse {
         // create query
         return CraftResponse(
             title = "Christmas card",
@@ -21,7 +21,8 @@ class CraftController(
             description = "A simple christmas card that you can present your family members",
             howLong = 20.toDuration(DurationUnit.MINUTES),
             difficultyLevel = 4,
-            username = "isabelsousa"
+            username = "isabelsousa",
+            image = "https://cdn.pixabay.com/photo/2016/06/14/14/13/background-1456640__340.jpg"
         )
     }
 
@@ -35,7 +36,8 @@ class CraftController(
             description = "A simple christmas card that you can present your family members",
             howLong = 20.toDuration(DurationUnit.MINUTES),
             difficultyLevel = 4,
-            username = "isabelsousa"
+            username = "isabelsousa",
+            image = "https://cdn.pixabay.com/photo/2016/06/14/14/13/background-1456640__340.jpg"
         )
     }
 }

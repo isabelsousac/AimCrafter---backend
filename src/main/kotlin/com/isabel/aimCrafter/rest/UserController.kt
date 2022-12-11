@@ -5,7 +5,6 @@ import com.isabel.aimCrafter.rest.model.*
 import com.isabel.aimCrafter.security.PasswordHasher
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
-import java.time.LocalDate
 
 @RestController
 class UserController(
@@ -15,8 +14,10 @@ class UserController(
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
     fun createUser(@RequestBody user: UserSignUp): UserSignInResponse {
-        user.password = passwordHasher.hashPassword(user.password)
-        val newUser = userDao.signUp(user)
+        val userWithHashedPassword = user.copy(
+            password = passwordHasher.hashPassword(user.password)
+        )
+        val newUser = userDao.signUp(userWithHashedPassword)
 
         return UserSignInResponse(
             ResponseUser(
@@ -32,13 +33,12 @@ class UserController(
     @ResponseStatus(HttpStatus.OK)
     fun signIn(@RequestBody user: UserSignIn): UserSignInResponse {
         user.password = passwordHasher.hashPassword(user.password)
-        val newUser = userDao.signIn(user)
-
+        val fetchedUser = userDao.signIn(user) ?: throw UserNotFoundException()
         return UserSignInResponse(
             ResponseUser(
-                firstName = "Isabel",
-                lastName = "Sousa",
-                username = "isabelsousa"
+                firstName = fetchedUser.firstName,
+                lastName = fetchedUser.lastName,
+                username = fetchedUser.username
             ),
             token = "5555"
         )
@@ -46,17 +46,11 @@ class UserController(
 
     @GetMapping("user/{id}")
     @ResponseStatus(HttpStatus.OK)
-    fun showUser(@PathVariable id: Int): User {
-        // create query
+    fun showUser(@PathVariable username: String): User {
+        val fetchedUser = userDao.showUser(username) ?: throw UserNotFoundException()
         return User(
-            username = "isabelsousa",
-            crafts = listOf(
-                SimplifiedCraftResponse(
-                    title = "Christmas card",
-                    image = "https://media.istockphoto.com/id/508030340/photo/sunny-cat.jpg?s=612x612&w=0&k=20&c=qkz-Mf32sbJnefRxpB7Fwpcxbp1fozYtJxbQoKvSeGM=",
-                    createdAt = LocalDate.now()
-                )
-            )
+            username = fetchedUser.username,
+            crafts = fetchedUser.crafts
         )
     }
 }

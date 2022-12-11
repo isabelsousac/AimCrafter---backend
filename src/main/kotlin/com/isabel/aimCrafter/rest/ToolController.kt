@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
-import java.time.LocalDate
+import java.time.Instant
 
 @RestController
 class ToolController {
@@ -20,12 +20,12 @@ class ToolController {
             SimplifiedCraftResponse(
                 title = "abc",
                 image = "https://cdn.pixabay.com/photo/2016/11/23/00/37/art-1851483__340.jpg",
-                createdAt = LocalDate.now()
+                createdAt = Instant.now()
             ),
             SimplifiedCraftResponse(
                 title = "abc",
                 image = "https://cdn.pixabay.com/photo/2016/11/20/08/25/embroidery-1842177__340.jpg",
-                createdAt = LocalDate.now()
+                createdAt = Instant.now()
             )
         )
     }
