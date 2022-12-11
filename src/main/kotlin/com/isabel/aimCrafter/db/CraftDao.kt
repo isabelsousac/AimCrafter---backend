@@ -1,8 +1,8 @@
 package com.isabel.aimCrafter.db
 
+import com.isabel.aimCrafter.db.model.ArraySqlValue
 import com.isabel.aimCrafter.db.model.CraftDb
 import com.isabel.aimCrafter.db.model.ShowCraftDb
-import com.isabel.aimCrafter.db.model.SimplifiedCraftDb
 import com.isabel.aimCrafter.rest.model.NewCraft
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Component
@@ -12,7 +12,7 @@ class CraftDao(
     val jdbcTemplate: NamedParameterJdbcTemplate,
     val userDao: UserDao
 ) {
-    fun createCraft(craft: NewCraft, userId: Int): CraftDb {
+    fun createCraft(craft: NewCraft, userId: Long): CraftDb {
         return jdbcTemplate.queryForObject(
             """
                 INSERT INTO crafts (title, userId, tools, description, howLong, difficultyLevel, image)
@@ -21,8 +21,8 @@ class CraftDao(
             """,
             mapOf(
                 "title" to craft.title,
-                "userId" to craft.userId,
-                "tools" to craft.tools,
+                "userId" to userId,
+                "tools" to ArraySqlValue(craft.tools.toTypedArray(), "text"),
                 "description" to craft.description,
                 "howLong" to craft.howLong,
                 "difficultyLevel" to craft.difficultyLevel,
@@ -35,7 +35,7 @@ class CraftDao(
                 userId = rs.getLong("userId"),
                 tools = (rs.getArray("tools").array as Array<String>).toList(),
                 description = rs.getString("description"),
-                howLong = rs.getTimestamp("howLong").toInstant(),
+                howLong = rs.getTimestamp("howLong")?.toInstant(),
                 difficultyLevel = rs.getInt("difficultyLevel"),
                 image = rs.getString("image"),
                 createdAt = rs.getTimestamp("createdAt"),
@@ -45,37 +45,26 @@ class CraftDao(
     }
 
     fun showCraft(id: Long): ShowCraftDb? {
-        val craft = jdbcTemplate.query(
+        return jdbcTemplate.query(
             """
-                SELECT (title, username, tools, description, howLong, difficultyLevel, createdAt, image, userId)
+                SELECT
+                    title, tools, description, howLong, difficultyLevel, createdAt, image,
+                    (SELECT username FROM users WHERE users.id = crafts.userId) AS username
                 FROM crafts
                 WHERE id = :id
             """,
             mapOf("id" to id)
         ) { rs, _ ->
-            SimplifiedCraftDb(
+            ShowCraftDb(
                 title = rs.getString("title"),
                 tools = (rs.getArray("tools").array as Array<String>).toList(),
                 description = rs.getString("description"),
-                howLong = rs.getTimestamp("howLong").toInstant(),
+                howLong = rs.getTimestamp("howLong")?.toInstant(),
                 difficultyLevel = rs.getInt("difficultyLevel"),
                 createdAt = rs.getTimestamp("createdAt"),
                 image = rs.getString("image"),
-                userId = rs.getLong("userId")
+                username = rs.getString("username")
             )
-        }.singleOrNull() ?: return null
-
-        val username = userDao.getUsername(craft.userId) ?: return null
-
-        return ShowCraftDb(
-            title = craft.title,
-            username = username.username,
-            tools = craft.tools,
-            description = craft.description,
-            howLong = craft.howLong,
-            difficultyLevel = craft.difficultyLevel,
-            createdAt = craft.createdAt,
-            image = craft.image
-        )
+        }.singleOrNull()
     }
 }

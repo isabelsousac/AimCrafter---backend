@@ -44,7 +44,7 @@ class UserController(
         )
     }
 
-    @GetMapping("user/{id}")
+    @GetMapping("user/{username}")
     @ResponseStatus(HttpStatus.OK)
     fun showUser(@PathVariable username: String): User {
         val fetchedUser = userDao.showUser(username) ?: throw UserNotFoundException()

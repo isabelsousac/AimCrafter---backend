@@ -83,7 +83,7 @@ class UserDao(
         }.singleOrNull() ?: return null
         val crafts = jdbcTemplate.query(
             """
-                SELECT (title, image, createdAt)
+                SELECT title, image, createdAt
                 FROM crafts
                 WHERE userId = :userId 
             """,
