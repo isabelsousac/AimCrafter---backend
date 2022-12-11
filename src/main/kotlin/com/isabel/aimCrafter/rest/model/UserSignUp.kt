@@ -5,7 +5,7 @@ data class UserSignUp(
     val lastName: String,
     val username: String,
     val email: String,
-    var password: String
+    val password: String
 )
 
 data class ResponseUser(
