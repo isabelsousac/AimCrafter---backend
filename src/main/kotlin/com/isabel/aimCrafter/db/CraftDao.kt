@@ -38,8 +38,8 @@ class CraftDao(
                 timeToCreate = rs.getTimestamp("timeToCreate")?.toInstant(),
                 difficultyLevel = rs.getInt("difficultyLevel"),
                 image = rs.getString("image"),
-                createdAt = rs.getTimestamp("createdAt"),
-                updatedAt = rs.getTimestamp("updatedAt")
+                createdAt = rs.getTimestamp("createdAt").toInstant(),
+                updatedAt = rs.getTimestamp("updatedAt").toInstant()
             )
         }!!
     }
@@ -61,7 +61,7 @@ class CraftDao(
                 description = rs.getString("description"),
                 timeToCreate = rs.getTimestamp("timeToCreate")?.toInstant(),
                 difficultyLevel = rs.getInt("difficultyLevel"),
-                createdAt = rs.getTimestamp("createdAt"),
+                createdAt = rs.getTimestamp("createdAt").toInstant(),
                 image = rs.getString("image"),
                 username = rs.getString("username")
             )

@@ -31,7 +31,8 @@ class CraftController(
             description = craftCreated.description,
             timeToCreate = craftCreated.timeToCreate,
             difficultyLevel = craftCreated.difficultyLevel,
-            image = craftCreated.image
+            image = craftCreated.image,
+            createdAt = craftCreated.createdAt
         )
     }
 
@@ -46,7 +47,8 @@ class CraftController(
             timeToCreate = craftCreated.timeToCreate,
             difficultyLevel = craftCreated.difficultyLevel,
             image = craftCreated.image,
-            username = craftCreated.username
+            username = craftCreated.username,
+            createdAt = craftCreated.createdAt
         )
     }
 }

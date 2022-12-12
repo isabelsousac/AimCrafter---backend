@@ -1,8 +1,7 @@
 package com.isabel.aimCrafter.db.model
 
 import com.isabel.aimCrafter.rest.model.SimplifiedCraftResponse
-import java.sql.Timestamp
-
+import java.time.Instant
 
 data class UserDb(
     val id: Long,
@@ -11,8 +10,8 @@ data class UserDb(
     val lastName: String,
     val email: String,
     val passwordDigest: String,
-    val createdAt: Timestamp,
-    val updatedAt: Timestamp,
+    val createdAt: Instant,
+    val updatedAt: Instant,
     val salt: String
 )
 

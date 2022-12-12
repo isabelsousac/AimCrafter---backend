@@ -38,8 +38,8 @@ class UserDao(
                 email = rs.getString("email"),
                 passwordDigest = rs.getString("passwordDigest"),
                 salt = rs.getString("salt"),
-                createdAt = rs.getTimestamp("createdAt"),
-                updatedAt = rs.getTimestamp("updatedAt"),
+                createdAt = rs.getTimestamp("createdAt").toInstant(),
+                updatedAt = rs.getTimestamp("updatedAt").toInstant(),
             )
         }!!
     }
@@ -62,8 +62,8 @@ class UserDao(
                 lastName = rs.getString("lastName"),
                 email = rs.getString("email"),
                 passwordDigest = rs.getString("passwordDigest"),
-                createdAt = rs.getTimestamp("createdAt"),
-                updatedAt = rs.getTimestamp("updatedAt"),
+                createdAt = rs.getTimestamp("createdAt").toInstant(),
+                updatedAt = rs.getTimestamp("updatedAt").toInstant(),
                 salt = rs.getString("salt")
             )
         }.singleOrNull()

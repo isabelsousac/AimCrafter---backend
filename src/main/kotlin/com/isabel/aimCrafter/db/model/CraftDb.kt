@@ -1,6 +1,5 @@
 package com.isabel.aimCrafter.db.model
 
-import java.sql.Timestamp
 import java.time.Instant
 
 data class CraftDb(
@@ -11,8 +10,8 @@ data class CraftDb(
     val description: String?,
     val timeToCreate: Instant?,
     val difficultyLevel: Int?,
-    val createdAt: Timestamp,
-    val updatedAt: Timestamp,
+    val createdAt: Instant,
+    val updatedAt: Instant,
     val image: String
 )
 
@@ -22,7 +21,7 @@ data class ShowCraftDb(
     val description: String?,
     val timeToCreate: Instant?,
     val difficultyLevel: Int?,
-    val createdAt: Timestamp,
+    val createdAt: Instant,
     val image: String,
     val username: String
 )

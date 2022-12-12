@@ -8,7 +8,6 @@ data class NewCraft(
     val description: String? = null,
     val timeToCreate: Instant? = null,
     val difficultyLevel: Int? = null,
-//    val token: String, // I think I need this, because a user can only post if they have an account
     val image: String
 )
 
@@ -19,6 +18,7 @@ data class CraftResponseNew(
     val timeToCreate: Instant? = null,
     val difficultyLevel: Int? = null,
     val image: String,
+    val createdAt: Instant
 )
 
 data class CraftResponseShow(
@@ -28,7 +28,8 @@ data class CraftResponseShow(
     val timeToCreate: Instant? = null,
     val difficultyLevel: Int? = null,
     val image: String,
-    val username: String
+    val username: String,
+    val createdAt: Instant
 )
 
 data class SimplifiedCraftResponse(
