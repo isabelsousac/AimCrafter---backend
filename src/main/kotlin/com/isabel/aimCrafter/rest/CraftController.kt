@@ -1,27 +1,35 @@
 package com.isabel.aimCrafter.rest
 
 import com.isabel.aimCrafter.db.CraftDao
-import com.isabel.aimCrafter.rest.model.CraftNotFoundException
-import com.isabel.aimCrafter.rest.model.CraftResponseNew
-import com.isabel.aimCrafter.rest.model.CraftResponseShow
-import com.isabel.aimCrafter.rest.model.NewCraft
+import com.isabel.aimCrafter.rest.model.*
+import com.isabel.aimCrafter.security.JWTTokens
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
 @RestController
 class CraftController(
-    val craftDao: CraftDao
+    val craftDao: CraftDao,
+    val jwtTokens: JWTTokens
 ) {
-    @PostMapping("/craft/{userId}")
+    @PostMapping("/craft")
     @ResponseStatus(HttpStatus.CREATED)
-    fun newCraft(@RequestBody craft: NewCraft, @PathVariable userId: Long): CraftResponseNew {
+    fun newCraft(
+        @RequestBody craft: NewCraft,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) authorization: String?
+    ): CraftResponseNew {
+        authorization ?: throw NotLoggedInException()
+        if (!authorization.startsWith("Bearer ")) throw NotLoggedInException()
+        val jwtToken = authorization.substringAfter("Bearer ")
+        val userId = jwtTokens.validateToken(jwtToken) ?: throw NotLoggedInException()
+
         val craftCreated = craftDao.createCraft(craft, userId)
 
         return CraftResponseNew(
             title = craftCreated.title,
             tools = craftCreated.tools,
             description = craftCreated.description,
-            howLong = craftCreated.howLong,
+            timeToCreate = craftCreated.timeToCreate,
             difficultyLevel = craftCreated.difficultyLevel,
             image = craftCreated.image
         )
@@ -35,7 +43,7 @@ class CraftController(
             title = craftCreated.title,
             tools = craftCreated.tools,
             description = craftCreated.description,
-            howLong = craftCreated.howLong,
+            timeToCreate = craftCreated.timeToCreate,
             difficultyLevel = craftCreated.difficultyLevel,
             image = craftCreated.image,
             username = craftCreated.username

@@ -15,16 +15,16 @@ class CraftDao(
     fun createCraft(craft: NewCraft, userId: Long): CraftDb {
         return jdbcTemplate.queryForObject(
             """
-                INSERT INTO crafts (title, userId, tools, description, howLong, difficultyLevel, image)
-                VALUES (:title, :userId, :tools, :description, :howLong, :difficultyLevel, :image)
-                RETURNING id, title, userId, tools, description, howLong, difficultyLevel, createdAt, updatedAt, image
+                INSERT INTO crafts (title, userId, tools, description, timeToCreate, difficultyLevel, image)
+                VALUES (:title, :userId, :tools, :description, :timeToCreate, :difficultyLevel, :image)
+                RETURNING id, title, userId, tools, description, timeToCreate, difficultyLevel, createdAt, updatedAt, image
             """,
             mapOf(
                 "title" to craft.title,
                 "userId" to userId,
                 "tools" to ArraySqlValue(craft.tools.toTypedArray(), "text"),
                 "description" to craft.description,
-                "howLong" to craft.howLong,
+                "timeToCreate" to craft.timeToCreate,
                 "difficultyLevel" to craft.difficultyLevel,
                 "image" to craft.image
             )
@@ -35,7 +35,7 @@ class CraftDao(
                 userId = rs.getLong("userId"),
                 tools = (rs.getArray("tools").array as Array<String>).toList(),
                 description = rs.getString("description"),
-                howLong = rs.getTimestamp("howLong")?.toInstant(),
+                timeToCreate = rs.getTimestamp("timeToCreate")?.toInstant(),
                 difficultyLevel = rs.getInt("difficultyLevel"),
                 image = rs.getString("image"),
                 createdAt = rs.getTimestamp("createdAt"),
@@ -48,7 +48,7 @@ class CraftDao(
         return jdbcTemplate.query(
             """
                 SELECT
-                    title, tools, description, howLong, difficultyLevel, createdAt, image,
+                    title, tools, description, timeToCreate, difficultyLevel, createdAt, image,
                     (SELECT username FROM users WHERE users.id = crafts.userId) AS username
                 FROM crafts
                 WHERE id = :id
@@ -59,7 +59,7 @@ class CraftDao(
                 title = rs.getString("title"),
                 tools = (rs.getArray("tools").array as Array<String>).toList(),
                 description = rs.getString("description"),
-                howLong = rs.getTimestamp("howLong")?.toInstant(),
+                timeToCreate = rs.getTimestamp("timeToCreate")?.toInstant(),
                 difficultyLevel = rs.getInt("difficultyLevel"),
                 createdAt = rs.getTimestamp("createdAt"),
                 image = rs.getString("image"),
