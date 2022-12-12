@@ -1,6 +1,9 @@
 # Users
+
 ## sign up
+
 Request:
+
 ```
 POST /signup
 {
@@ -11,7 +14,9 @@ POST /signup
     "password": <String>
 }
 ```
+
 Response:
+
 ```
 201 CREATED
 {
@@ -25,7 +30,9 @@ Response:
 ```
 
 ## sign in
+
 Request:
+
 ```
 POST /signin
 {
@@ -33,7 +40,9 @@ POST /signin
     "password": <String>
 }
 ```
+
 Response:
+
 ```
 200 OK
 {
@@ -47,11 +56,15 @@ Response:
 ```
 
 ## show user
+
 Request:
+
 ```
 GET /user/<id>
 ```
+
 Response:
+
 ```
 200 OK
 {
@@ -67,9 +80,12 @@ Response:
 }
 ```
 
-#Crafts
+# Crafts
+
 ## new craft
+
 Request:
+
 ```
 POST /craft
 {
@@ -77,18 +93,20 @@ POST /craft
     "userId": <Int>,
     "tools": <String[]>,
     "description": <String?>,
-    "howLong": <Time?>,
+    "timeToCreate": <Time?>,
     "difficultyLevel": <Int?>
 }
 ```
+
 Response:
+
 ```
 201 CREATED
 {
     "title": <String>,
     "tools": <String[]>,
     "description": <String?>,
-    "howLong": <Time?>,
+    "timeToCreate": <Time?>,
     "difficultyLevel": <Int?>
 }
 ```

@@ -8,3 +8,6 @@ class UserNotFoundException : RuntimeException()
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "Craft does not exist")
 class CraftNotFoundException : RuntimeException()
+
+@ResponseStatus(value = HttpStatus.UNAUTHORIZED, reason = "User is not logged in")
+class NotLoggedInException : RuntimeException()
