@@ -14,19 +14,20 @@ import org.springframework.stereotype.Component
 class UserDao(
     val jdbcTemplate: NamedParameterJdbcTemplate
 ) {
-    fun signUp(user: UserSignUp): UserDb {
+    fun signUp(user: UserSignUp, salt: String): UserDb {
         return jdbcTemplate.queryForObject(
             """
-                INSERT INTO users (firstName, lastName, username, email, passwordDigest)
-                VALUES (:firstName, :lastName, :username, :email, :passwordDigest)
-                RETURNING id, username, firstName, lastName, email, passwordDigest, createdAt, updatedAt
+                INSERT INTO users (firstName, lastName, username, email, passwordDigest, salt)
+                VALUES (:firstName, :lastName, :username, :email, :passwordDigest, :salt)
+                RETURNING id, username, firstName, lastName, email, passwordDigest, createdAt, updatedAt, salt
             """,
             mapOf(
                 "firstName" to user.firstName,
                 "lastName" to user.lastName,
                 "username" to user.username,
                 "email" to user.email,
-                "passwordDigest" to user.password
+                "passwordDigest" to user.password,
+                "salt" to salt
             )
         ) { rs, _ ->
             UserDb(
@@ -36,8 +37,9 @@ class UserDao(
                 lastName = rs.getString("lastName"),
                 email = rs.getString("email"),
                 passwordDigest = rs.getString("passwordDigest"),
+                salt = rs.getString("salt"),
                 createdAt = rs.getTimestamp("createdAt"),
-                updatedAt = rs.getTimestamp("updatedAt")
+                updatedAt = rs.getTimestamp("updatedAt"),
             )
         }!!
     }
@@ -45,13 +47,12 @@ class UserDao(
     fun signIn(user: UserSignIn): UserDb? {
         return jdbcTemplate.query(
             """
-                SELECT id, firstName, lastName, username, email, passwordDigest, createdAt, updatedAt
+                SELECT id, firstName, lastName, username, email, passwordDigest, createdAt, updatedAt, salt
                 FROM users
-                WHERE email = :email AND passwordDigest = :passwordDigest
+                WHERE email = :email
             """,
             mapOf(
-                "email" to user.email,
-                "passwordDigest" to user.password,
+                "email" to user.email
             )
         ) { rs, _ ->
             UserDb(
@@ -62,7 +63,8 @@ class UserDao(
                 email = rs.getString("email"),
                 passwordDigest = rs.getString("passwordDigest"),
                 createdAt = rs.getTimestamp("createdAt"),
-                updatedAt = rs.getTimestamp("updatedAt")
+                updatedAt = rs.getTimestamp("updatedAt"),
+                salt = rs.getString("salt")
             )
         }.singleOrNull()
     }

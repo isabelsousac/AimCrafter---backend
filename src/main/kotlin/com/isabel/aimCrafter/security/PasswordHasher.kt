@@ -9,11 +9,20 @@ import java.util.*
 @Component
 class PasswordHasher {
     val RANDOM = SecureRandom()
-    fun hashPassword(password: String): String {
+
+    fun hashPassword(password: String): SaltPass {
         val md: MessageDigest = MessageDigest.getInstance("SHA-512")
-        md.update(getNextSalt())
+        val salt = getNextSalt()
+        md.update(salt)
         val digestedPassword = md.digest(password.toByteArray(UTF_8))
-        return HexFormat.of().formatHex(digestedPassword)
+        return SaltPass(password = HexFormat.of().formatHex(digestedPassword), salt = HexFormat.of().formatHex(salt))
+    }
+
+    fun isValidPassword(loginPassword: String, fetchedPassword: String, salt: String): Boolean {
+        val md: MessageDigest = MessageDigest.getInstance("SHA-512")
+        md.update(HexFormat.of().parseHex(salt))
+        val digestedPassword = md.digest(loginPassword.toByteArray(UTF_8))
+        return digestedPassword.contentEquals(HexFormat.of().parseHex(fetchedPassword))
     }
 
     fun getNextSalt(): ByteArray {
@@ -22,3 +31,8 @@ class PasswordHasher {
         return salt
     }
 }
+
+data class SaltPass(
+    val password: String,
+    val salt: String
+)

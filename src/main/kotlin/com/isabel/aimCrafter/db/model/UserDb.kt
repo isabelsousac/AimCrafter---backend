@@ -12,7 +12,8 @@ data class UserDb(
     val email: String,
     val passwordDigest: String,
     val createdAt: Timestamp,
-    val updatedAt: Timestamp
+    val updatedAt: Timestamp,
+    val salt: String
 )
 
 data class UserAndCraftsDb(

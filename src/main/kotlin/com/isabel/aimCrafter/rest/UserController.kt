@@ -19,10 +19,11 @@ class UserController(
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
     fun createUser(@RequestBody user: UserSignUp): UserSignInResponse {
+        val saltPass = passwordHasher.hashPassword(user.password)
         val userWithHashedPassword = user.copy(
-            password = passwordHasher.hashPassword(user.password)
+            password = saltPass.password
         )
-        val newUser = userDao.signUp(userWithHashedPassword)
+        val newUser = userDao.signUp(userWithHashedPassword, saltPass.salt)
 
         return UserSignInResponse(
             ResponseUser(
@@ -37,8 +38,10 @@ class UserController(
     @PostMapping("/signin")
     @ResponseStatus(HttpStatus.OK)
     fun signIn(@RequestBody user: UserSignIn): UserSignInResponse {
-        user.password = passwordHasher.hashPassword(user.password)
+//        user.password = passwordHasher.hashPassword(user.password)
         val fetchedUser = userDao.signIn(user) ?: throw UserNotFoundException()
+        if (!passwordHasher.isValidPassword(user.password, fetchedUser.passwordDigest, fetchedUser.salt))
+            throw UserNotFoundException()
 
         return UserSignInResponse(
             ResponseUser(
