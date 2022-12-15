@@ -100,4 +100,21 @@ class CraftDao(
             )
         }
     }
+
+    fun searchFilteredCrafts(filteredTools: FilteredTools): List<ShowCraftsDb> {
+        return jdbcTemplate.query(
+            """
+                 SELECT id, title, image, (SELECT username FROM users WHERE users.id = crafts.userId) AS username
+                 FROM crafts
+                 WHERE
+            """
+        ) { rs, _ ->
+            ShowCraftsDb(
+                title = rs.getString("title"),
+                image = rs.getString("image"),
+                username = rs.getString("username"),
+                id = rs.getLong("id")
+            )
+        }
+    }
 }

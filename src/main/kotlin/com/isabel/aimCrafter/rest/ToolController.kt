@@ -14,7 +14,7 @@ class ToolController {
     // I don't know if I need a Dao interface for this rest controller
     @GetMapping("/pickedCrafts")
     @ResponseStatus(HttpStatus.OK)
-    fun craftsByTools(@RequestBody tools: List<Tool>): List<SimplifiedCraftResponse> {
+    fun craftsByTools(@RequestBody tools: Tool): List<SimplifiedCraftResponse> {
         // create query
         return listOf(
             SimplifiedCraftResponse(
