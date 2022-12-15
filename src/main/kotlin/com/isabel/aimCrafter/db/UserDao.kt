@@ -1,12 +1,10 @@
 package com.isabel.aimCrafter.db
 
-import com.isabel.aimCrafter.db.model.UserAndCraftsDb
-import com.isabel.aimCrafter.db.model.UserDb
-import com.isabel.aimCrafter.db.model.UserInfoDb
-import com.isabel.aimCrafter.db.model.UsernameDb
+import com.isabel.aimCrafter.db.model.*
 import com.isabel.aimCrafter.rest.model.SimplifiedCraftResponse
 import com.isabel.aimCrafter.rest.model.UserSignIn
 import com.isabel.aimCrafter.rest.model.UserSignUp
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Component
 
@@ -15,33 +13,38 @@ class UserDao(
     val jdbcTemplate: NamedParameterJdbcTemplate
 ) {
     fun signUp(user: UserSignUp, salt: String): UserDb {
-        return jdbcTemplate.queryForObject(
-            """
+        val user = try {
+            jdbcTemplate.queryForObject(
+                """
                 INSERT INTO users (firstName, lastName, username, email, passwordDigest, salt)
                 VALUES (:firstName, :lastName, :username, :email, :passwordDigest, :salt)
                 RETURNING id, username, firstName, lastName, email, passwordDigest, createdAt, updatedAt, salt
             """,
-            mapOf(
-                "firstName" to user.firstName,
-                "lastName" to user.lastName,
-                "username" to user.username,
-                "email" to user.email,
-                "passwordDigest" to user.password,
-                "salt" to salt
-            )
-        ) { rs, _ ->
-            UserDb(
-                id = rs.getLong("id"),
-                username = rs.getString("username"),
-                firstName = rs.getString("firstName"),
-                lastName = rs.getString("lastName"),
-                email = rs.getString("email"),
-                passwordDigest = rs.getString("passwordDigest"),
-                salt = rs.getString("salt"),
-                createdAt = rs.getTimestamp("createdAt").toInstant(),
-                updatedAt = rs.getTimestamp("updatedAt").toInstant(),
-            )
-        }!!
+                mapOf(
+                    "firstName" to user.firstName,
+                    "lastName" to user.lastName,
+                    "username" to user.username,
+                    "email" to user.email,
+                    "passwordDigest" to user.password,
+                    "salt" to salt
+                )
+            ) { rs, _ ->
+                UserDb(
+                    id = rs.getLong("id"),
+                    username = rs.getString("username"),
+                    firstName = rs.getString("firstName"),
+                    lastName = rs.getString("lastName"),
+                    email = rs.getString("email"),
+                    passwordDigest = rs.getString("passwordDigest"),
+                    salt = rs.getString("salt"),
+                    createdAt = rs.getTimestamp("createdAt").toInstant(),
+                    updatedAt = rs.getTimestamp("updatedAt").toInstant(),
+                )
+            }!!
+        } catch (e: DataIntegrityViolationException) {
+            throw DuplicatedUsernameException()
+        }
+        return user
     }
 
     fun signIn(user: UserSignIn): UserDb? {

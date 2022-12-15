@@ -1,0 +1,2 @@
+ALTER TABLE crafts
+    ALTER COLUMN minutesToCreate SET DEFAULT NULL

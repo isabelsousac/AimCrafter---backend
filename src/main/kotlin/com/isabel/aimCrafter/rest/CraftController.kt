@@ -29,26 +29,58 @@ class CraftController(
             title = craftCreated.title,
             tools = craftCreated.tools,
             description = craftCreated.description,
-            timeToCreate = craftCreated.timeToCreate,
+            minutesToCreate = craftCreated.minutesToCreate,
             difficultyLevel = craftCreated.difficultyLevel,
             image = craftCreated.image,
-            createdAt = craftCreated.createdAt
+            createdAt = craftCreated.createdAt,
+            id = craftCreated.id
         )
     }
 
     @GetMapping("/craft/{id}")
     @ResponseStatus(HttpStatus.OK)
-    fun showCraft(@PathVariable id: Long): CraftResponseShow {
-        val craftCreated = craftDao.showCraft(id) ?: throw CraftNotFoundException()
+    fun showCraft(@PathVariable id: String): CraftResponseShow {
+        val idAsLong = id.toLong()
+        val craftCreated = craftDao.showCraft(idAsLong) ?: throw CraftNotFoundException()
         return CraftResponseShow(
             title = craftCreated.title,
             tools = craftCreated.tools,
             description = craftCreated.description,
-            timeToCreate = craftCreated.timeToCreate,
+            minutesToCreate = craftCreated.minutesToCreate,
             difficultyLevel = craftCreated.difficultyLevel,
             image = craftCreated.image,
             username = craftCreated.username,
-            createdAt = craftCreated.createdAt
+            createdAt = craftCreated.createdAt,
         )
+    }
+
+    @GetMapping("/crafts")
+    @ResponseStatus(HttpStatus.OK)
+    fun showCrafts(): List<CraftsResponseList> {
+        val crafts = craftDao.showCrafts()
+        return crafts.map { craftCreated ->
+            CraftsResponseList(
+                title = craftCreated.title,
+                image = craftCreated.image,
+                username = craftCreated.username,
+                id = craftCreated.id
+            )
+        }
+    }
+
+    @DeleteMapping("/craft/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    fun deleteCraft(
+        @PathVariable id: String,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) authorization: String?
+    ): Boolean {
+        authorization ?: throw NotLoggedInException()
+        if (!authorization.startsWith("Bearer ")) throw NotLoggedInException()
+        val jwtToken = authorization.substringAfter("Bearer ")
+        val userId = jwtTokens.validateToken(jwtToken) ?: throw NotLoggedInException()
+
+        val idAsLong = id.toLong()
+        craftDao.deleteCraft(idAsLong, userId.toInt()) ?: throw CraftNotFoundException()
+        return true
     }
 }

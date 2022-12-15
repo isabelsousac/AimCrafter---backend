@@ -11,7 +11,8 @@ data class UserSignUp(
 data class ResponseUser(
     val firstName: String,
     val lastName: String,
-    val username: String
+    val username: String,
+    val id: Long
 )
 
 data class UserSignInResponse(

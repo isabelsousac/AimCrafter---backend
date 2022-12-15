@@ -29,7 +29,8 @@ class UserController(
             ResponseUser(
                 firstName = newUser.firstName,
                 lastName = newUser.lastName,
-                username = newUser.username
+                username = newUser.username,
+                id = newUser.id
             ),
             token = jwtTokens.generateToken(newUser.id)
         )
@@ -47,7 +48,8 @@ class UserController(
             ResponseUser(
                 firstName = fetchedUser.firstName,
                 lastName = fetchedUser.lastName,
-                username = fetchedUser.username
+                username = fetchedUser.username,
+                id = fetchedUser.id
             ),
             token = jwtTokens.generateToken(fetchedUser.id)
         )

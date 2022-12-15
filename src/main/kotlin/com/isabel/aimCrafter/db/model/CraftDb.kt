@@ -1,5 +1,6 @@
 package com.isabel.aimCrafter.db.model
 
+import java.time.Duration
 import java.time.Instant
 
 data class CraftDb(
@@ -8,7 +9,7 @@ data class CraftDb(
     val userId: Long,
     val tools: List<String>,
     val description: String?,
-    val timeToCreate: Instant?,
+    val minutesToCreate: Duration?,
     val difficultyLevel: Int?,
     val createdAt: Instant,
     val updatedAt: Instant,
@@ -19,9 +20,16 @@ data class ShowCraftDb(
     val title: String,
     val tools: List<String>,
     val description: String?,
-    val timeToCreate: Instant?,
+    val minutesToCreate: Duration?,
     val difficultyLevel: Int?,
     val createdAt: Instant,
     val image: String,
     val username: String
+)
+
+data class ShowCraftsDb(
+    val title: String,
+    val username: String,
+    val image: String,
+    val id: Long
 )

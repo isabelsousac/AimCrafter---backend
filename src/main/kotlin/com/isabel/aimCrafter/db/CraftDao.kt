@@ -3,9 +3,11 @@ package com.isabel.aimCrafter.db
 import com.isabel.aimCrafter.db.model.ArraySqlValue
 import com.isabel.aimCrafter.db.model.CraftDb
 import com.isabel.aimCrafter.db.model.ShowCraftDb
+import com.isabel.aimCrafter.db.model.ShowCraftsDb
 import com.isabel.aimCrafter.rest.model.NewCraft
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Component
+import java.time.Duration
 
 @Component
 class CraftDao(
@@ -15,16 +17,16 @@ class CraftDao(
     fun createCraft(craft: NewCraft, userId: Long): CraftDb {
         return jdbcTemplate.queryForObject(
             """
-                INSERT INTO crafts (title, userId, tools, description, timeToCreate, difficultyLevel, image)
-                VALUES (:title, :userId, :tools, :description, :timeToCreate, :difficultyLevel, :image)
-                RETURNING id, title, userId, tools, description, timeToCreate, difficultyLevel, createdAt, updatedAt, image
+                INSERT INTO crafts (title, userId, tools, description, minutesToCreate, difficultyLevel, image)
+                VALUES (:title, :userId, :tools, :description, :minutesToCreate, :difficultyLevel, :image)
+                RETURNING id, title, userId, tools, description, minutesToCreate, difficultyLevel, createdAt, updatedAt, image
             """,
             mapOf(
                 "title" to craft.title,
                 "userId" to userId,
                 "tools" to ArraySqlValue(craft.tools.toTypedArray(), "text"),
                 "description" to craft.description,
-                "timeToCreate" to craft.timeToCreate,
+                "minutesToCreate" to craft.minutesToCreate,
                 "difficultyLevel" to craft.difficultyLevel,
                 "image" to craft.image
             )
@@ -35,7 +37,7 @@ class CraftDao(
                 userId = rs.getLong("userId"),
                 tools = (rs.getArray("tools").array as Array<String>).toList(),
                 description = rs.getString("description"),
-                timeToCreate = rs.getTimestamp("timeToCreate")?.toInstant(),
+                minutesToCreate = Duration.ofMinutes(rs.getInt("minutesToCreate").toLong()),
                 difficultyLevel = rs.getInt("difficultyLevel"),
                 image = rs.getString("image"),
                 createdAt = rs.getTimestamp("createdAt").toInstant(),
@@ -48,7 +50,7 @@ class CraftDao(
         return jdbcTemplate.query(
             """
                 SELECT
-                    title, tools, description, timeToCreate, difficultyLevel, createdAt, image,
+                    title, tools, description, minutesToCreate, difficultyLevel, createdAt, image,
                     (SELECT username FROM users WHERE users.id = crafts.userId) AS username
                 FROM crafts
                 WHERE id = :id
@@ -59,12 +61,43 @@ class CraftDao(
                 title = rs.getString("title"),
                 tools = (rs.getArray("tools").array as Array<String>).toList(),
                 description = rs.getString("description"),
-                timeToCreate = rs.getTimestamp("timeToCreate")?.toInstant(),
+                minutesToCreate = Duration.ofMinutes(rs.getInt("minutesToCreate").toLong()),
                 difficultyLevel = rs.getInt("difficultyLevel"),
                 createdAt = rs.getTimestamp("createdAt").toInstant(),
                 image = rs.getString("image"),
                 username = rs.getString("username")
             )
         }.singleOrNull()
+    }
+
+    fun deleteCraft(id: Long, userId: Int): Boolean? {
+        try {
+            jdbcTemplate.update(
+                """
+                    DELETE FROM crafts 
+                    WHERE id = :id AND userId = :userId
+                """,
+                mapOf("id" to id, "userId" to userId)
+            )
+        } catch (e: Exception) {
+            return null
+        }
+        return true
+    }
+
+    fun showCrafts(): List<ShowCraftsDb> {
+        return jdbcTemplate.query(
+            """
+                 SELECT id, title, image, (SELECT username FROM users WHERE users.id = crafts.userId) AS username
+                 FROM crafts
+            """
+        ) { rs, _ ->
+            ShowCraftsDb(
+                title = rs.getString("title"),
+                image = rs.getString("image"),
+                username = rs.getString("username"),
+                id = rs.getLong("id")
+            )
+        }
     }
 }

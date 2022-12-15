@@ -93,7 +93,7 @@ POST /craft
     "userId": <Int>,
     "tools": <String[]>,
     "description": <String?>,
-    "timeToCreate": <Time?>,
+    "minutesToCreate": <Int?>,
     "difficultyLevel": <Int?>
 }
 ```
@@ -106,7 +106,7 @@ Response:
     "title": <String>,
     "tools": <String[]>,
     "description": <String?>,
-    "timeToCreate": <Time?>,
+    "minutesToCreate": <Int?>,
     "difficultyLevel": <Int?>
 }
 ```
