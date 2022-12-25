@@ -4,8 +4,11 @@ import java.io.FileOutputStream
 import java.security.KeyPairGenerator
 
 
-/** Generates a key and writes it to the console **/
-fun main() {
+/** Run this to generate a key and write it to the console **/
+//fun main() {
+//    generateKeys()
+//}
+fun generateKeys() {
     val generator = KeyPairGenerator.getInstance("RSA")
     generator.initialize(2048)
     val pair = generator.generateKeyPair()
