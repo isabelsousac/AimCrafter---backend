@@ -101,13 +101,15 @@ class CraftDao(
         }
     }
 
-    fun searchFilteredCrafts(filteredTools: FilteredTools): List<ShowCraftsDb> {
+    fun searchFilteredCrafts(filteredTools: List<String>): List<ShowCraftsDb> {
         return jdbcTemplate.query(
             """
                  SELECT id, title, image, (SELECT username FROM users WHERE users.id = crafts.userId) AS username
                  FROM crafts
                  WHERE
-            """
+                 tools && :filteredTools;
+            """,
+            mapOf("filteredTools" to ArraySqlValue(filteredTools.toTypedArray(), "text"))
         ) { rs, _ ->
             ShowCraftsDb(
                 title = rs.getString("title"),

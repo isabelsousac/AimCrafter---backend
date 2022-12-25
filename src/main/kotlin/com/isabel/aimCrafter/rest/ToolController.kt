@@ -1,32 +1,31 @@
 package com.isabel.aimCrafter.rest
 
-import com.isabel.aimCrafter.rest.model.SimplifiedCraftResponse
-import com.isabel.aimCrafter.rest.model.Tool
+import com.isabel.aimCrafter.db.CraftDao
+import com.isabel.aimCrafter.rest.model.CraftsResponseList
+import com.isabel.aimCrafter.rest.model.Tools
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
-import java.time.Instant
 
 @RestController
-class ToolController {
-    // I don't know if I need a Dao interface for this rest controller
+class ToolController(
+    val craftDao: CraftDao,
+) {
     @GetMapping("/pickedCrafts")
     @ResponseStatus(HttpStatus.OK)
-    fun craftsByTools(@RequestBody tools: Tool): List<SimplifiedCraftResponse> {
-        // create query
-        return listOf(
-            SimplifiedCraftResponse(
-                title = "abc",
-                image = "https://cdn.pixabay.com/photo/2016/11/23/00/37/art-1851483__340.jpg",
-                createdAt = Instant.now()
-            ),
-            SimplifiedCraftResponse(
-                title = "abc",
-                image = "https://cdn.pixabay.com/photo/2016/11/20/08/25/embroidery-1842177__340.jpg",
-                createdAt = Instant.now()
+    fun craftsByTools(@RequestBody tools: Tools): List<CraftsResponseList> {
+        val toolsLowercase = tools.tools.map { it.lowercase() }
+        val fetchedCrafts = craftDao.searchFilteredCrafts(toolsLowercase)
+
+        return fetchedCrafts.map { craft ->
+            CraftsResponseList(
+                title = craft.title,
+                image = craft.image,
+                username = craft.username,
+                id = craft.id
             )
-        )
+        }
     }
 }
