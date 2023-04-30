@@ -1,8 +1,8 @@
 # AimCrafter
 
-AimCrafter is a website made for those who are obssessed for crafts, doodle, watercolor and everything related to art.
+AimCrafter is a website made for those who are obsessed for crafts, doodle, watercolor and everything related to art.
 
-Everyone can see the crafts posted for other users. but in order to post yours, the user needs to first create a
+Everyone can see the crafts posted for other users. but in order to post yours, the user needs to first create an
 account.
 
 Every craft contains information about how the artist felt about that craft, such as how long it took to create and
@@ -14,6 +14,17 @@ stack development app techniques were intended to be developed.
 This repository contains the backend code project. React repository
 is [here](https://github.com/isabelsousac/AimCrafter-frontend).
 
+## How to run
+
+Before you start:
+* Make sure you have [Docker](https://www.docker.com/) installed
+* Make sure you have Java 17 installed
+
+To run the app you need:
+
+* Run `kotlin/com/isabel/aimCrafter/security/KeyWriter.kt` to create the JWT keys
+* Start Postgres at port 5432 using `./create_db.sh`
+
 ## Website
 
 This repository is not deployed yet.
@@ -22,8 +33,9 @@ This repository is not deployed yet.
 
 * Kotlin
 * Spring Boot
-* JWT API
+* Docker
 * PostgreSQL
+* JWT
 
 ## API endpoints
 
