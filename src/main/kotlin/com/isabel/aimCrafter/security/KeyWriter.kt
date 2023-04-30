@@ -5,9 +5,9 @@ import java.security.KeyPairGenerator
 
 
 /** Run this to generate a key and write it to the console **/
-//fun main() {
-//    generateKeys()
-//}
+fun main() {
+    generateKeys()
+}
 fun generateKeys() {
     val generator = KeyPairGenerator.getInstance("RSA")
     generator.initialize(2048)
